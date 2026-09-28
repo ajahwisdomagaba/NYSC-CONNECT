@@ -24,6 +24,15 @@ app.use(express.json());
 app.use("/api/v1", apiRouter);
 
 //API Health check
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Welcome to NYSC Connect API",
+  });
+});
+
+
+//API Health check
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "success",
