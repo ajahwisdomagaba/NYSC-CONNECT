@@ -43,4 +43,4 @@ const UserSchema = new mongoose.Schema(
 );
 UserSchema.index({ status: 1, lga: 1 });
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model("User", UserSchema);
