@@ -1,11 +1,20 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const connectDB = async () => {
-  try{
-    const conn = await mongoose.connect(PerformanceObserverEntryList.env.DATABASE_URI);
-    console.log(`MongoDB connected: ${conn.connection.host}`);
-  } catch(error){
+  try {
+    const uri = process.env.DATABASE_URI || process.env.DATABASE_URL;
+    if (!uri) {
+      throw new Error("DATABASE_URI or DATABASE_URL is not defined in .env");
+    }
+
+    const conn = await mongoose.connect(uri);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
     console.error(`Database Connection Error: ${error.message}`);
+    process.exit(1);
   }
 };
 

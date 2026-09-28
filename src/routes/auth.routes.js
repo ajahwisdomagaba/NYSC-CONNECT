@@ -1,7 +1,9 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-const router = Router()
+const router = Router();
 
-//TODO: Attach auth controllers and validation middlewares
+router.get('/', (req, res) => {
+  res.status(200).json({ status: 'success', message: 'Auth Route works' });
+});
 
 export default router;
