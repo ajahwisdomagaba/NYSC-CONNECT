@@ -9,6 +9,12 @@ import locationRoutes from './location.routes.js';
 
 const router = Router();
 
+// Healthcheck
+router.get('/health', (req, res) => {
+  res.status(200).json({ status: 'success', message: 'API is healthy' });
+});
+
+//Modular routes
 router.use('/auth', authRoutes);
 router.use('/accomodations', accomodationRoutes);
 router.use('/local-info', localInfoRoutes);
