@@ -9,7 +9,7 @@ const TYPES = [
   'shared-apartment',
 ];
 
-// status = is the listing live? | verificationStatus = has an admin approved it?
+// status = is the listing live? | verification_status = has an admin approved it?
 const STATUSES = ['active', 'flagged', 'hidden', 'archived'];
 const VERIFICATION_STATUSES = ['pending', 'verified', 'rejected', 'flagged'];
 
@@ -23,6 +23,15 @@ const AMENITIES = [
   'water_supply',
   'parking',
   'shared_flat',
+];
+
+const PROPERTY_INFO = [
+  'fenced',
+  'gated',
+  'running_water',
+  'prepaid_meter',
+  'close_to_market',
+  'motorable_road',
 ];
 
 const accommodationSchema = new mongoose.Schema(
@@ -45,7 +54,7 @@ const accommodationSchema = new mongoose.Schema(
       default: 'self-contain',
     },
 
-    // Price mappings (price acts as annual rent for search compatibility)
+    // Price mappings (price serves as annual rent for search compatibility)
     price: {
       type: Number,
       required: [true, 'Annual rent price is required'],
@@ -62,15 +71,15 @@ const accommodationSchema = new mongoose.Schema(
       min: 0,
     },
 
-    // Location (references Ibeawuchi's State / Lga collections)
+    // Location: Supports both ObjectId refs and direct string names for MVP flexibility
     state: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.Mixed,
       ref: 'State',
       required: [true, 'State is required'],
       trim: true,
     },
     lga: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.Mixed,
       ref: 'Lga',
       required: [true, 'LGA is required'],
       trim: true,
@@ -91,11 +100,11 @@ const accommodationSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // Media Pipeline (Accepts array of strings or Cloudinary objects, capped at 3)
+    // Media Pipeline: Multi-image upload handlers (capped at 3 per listing)
     photos: {
       type: [mongoose.Schema.Types.Mixed],
       validate: {
-        validator: (arr) => arr.length <= 3,
+        validator: (arr) => !arr || arr.length <= 3,
         message: 'A listing can have at most 3 images',
       },
       default: [],
@@ -104,12 +113,10 @@ const accommodationSchema = new mongoose.Schema(
     // Features / Amenities
     amenities: {
       type: [String],
-      enum: AMENITIES,
       default: [],
     },
     property_info: {
       type: [String],
-      enum: PROPERTY_INFO,
       default: [],
     },
 
@@ -141,15 +148,17 @@ const accommodationSchema = new mongoose.Schema(
       enum: VERIFICATION_STATUSES,
       default: 'pending',
     },
+    landlord: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Created by is required'],
     },
     last_updated_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Last updated by is required'],
     },
     last_updated_at: {
       type: Date,
@@ -158,21 +167,24 @@ const accommodationSchema = new mongoose.Schema(
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: false },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
-// Virtual field: maps annualRent to price if controllers reference annualRent
+// Virtual field: alias annualRent <-> price
 accommodationSchema.virtual('annualRent')
   .get(function () { return this.price; })
   .set(function (v) { this.price = v; });
 
-// Indexes for Search Feed & Filtering (Compound and Standalone)
+// Search Pipeline & Moderation Indexes
 accommodationSchema.index({ state: 1, lga: 1, status: 1 });
 accommodationSchema.index({ price: 1 });
 accommodationSchema.index({ status: 1, verification_status: 1, state: 1, price: 1 });
 accommodationSchema.index({ amenities: 1 });
+accommodationSchema.index({ landlord: 1 });
 
 const Accommodation = mongoose.model('Accommodation', accommodationSchema);
 
-export { TYPES, STATUSES, VERIFICATION_STATUSES, AMENITIES };
+export { TYPES, STATUSES, VERIFICATION_STATUSES, AMENITIES, PROPERTY_INFO };
 export default Accommodation;
