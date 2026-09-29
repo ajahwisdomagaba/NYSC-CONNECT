@@ -1,9 +1,8 @@
 import { Router } from 'express';
+import { getAccommodationFeed } from '../controllers/accommodation.controller.js';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.status(200).json({ status: 'success', message: 'Accommodation Route works' });
-});
+router.get('/', getAccommodationFeed);
 
 export default router;
