@@ -419,4 +419,4 @@ The staging environment is deployed on Render by the coordinator, for live front
 
 ---
 
-*Maintained by the NYSC Connect Backend Engineering unit.*
+*Maintained by the NYSC Connect Backend Engineering unit. README.md by Babajide*
