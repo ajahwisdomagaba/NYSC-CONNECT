@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authRoutes from './auth.routes.js';
-import accomodationRoutes from './accomodation.route.js';
+import accommodationRoutes from './accommodation.route.js';
 import localInfoRoutes from './localinfo.route.js';
 import savedRoutes from './saved.routes.js';
 import reportsRoutes from './reports.routes.js'
@@ -16,7 +16,7 @@ router.get('/health', (req, res) => {
 
 //Modular routes
 router.use('/auth', authRoutes);
-router.use('/accomodations', accomodationRoutes);
+router.use('/accommodations', accommodationRoutes);
 router.use('/local-info', localInfoRoutes);
 router.use('/saved', savedRoutes);
 router.use('/reports', reportsRoutes);

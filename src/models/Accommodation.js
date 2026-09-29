@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const accomodationSchema = new mongoose.Schema(
+const accommodationSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -59,7 +59,7 @@ const accomodationSchema = new mongoose.Schema(
 
 //Compound and Standalone Indexes for geospatial Filtering and Moderations
 
-accomodationSchema.index({ state: 1, lga: 1, status: 1 });
-accomodationSchema.index({ price: 1 });
+accommodationSchema.index({ state: 1, lga: 1, status: 1 });
+accommodationSchema.index({ price: 1 });
 
-export default mongoose.model("Accommodation", accomodationSchema);
+export default mongoose.model("Accommodation", accommodationSchema);
