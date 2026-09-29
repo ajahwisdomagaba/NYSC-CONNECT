@@ -33,25 +33,25 @@ test('minimum price should apply $gte filter', () => {
   const result = buildAccommodationQuery({ minPrice: 200000 });
   assert.equal(result.verificationStatus, 'verified');
   assert.equal(result.status, 'active');
-  assert.deepEqual(result.price, { $gte: 200000 });
+  assert.deepEqual(result.annualRent, { $gte: 200000 });
 });
 
 test('maximum price should apply $lte filter', () => {
   const result = buildAccommodationQuery({ maxPrice: 500000 });
-  assert.deepEqual(result.price, { $lte: 500000 });
+  assert.deepEqual(result.annualRent, { $lte: 500000 });
 });
 
 test('price range should apply both min and max values', () => {
   const result = buildAccommodationQuery({ minPrice: 200000, maxPrice: 500000 });
-  assert.deepEqual(result.price, {
+  assert.deepEqual(result.annualRent, {
     $gte: 200000,
     $lte: 500000,
   });
 });
 
-test('accommodation type should be filtered by exact case-insensitive match', () => {
+test('accommodation type should be normalized to the final enum format', () => {
   const result = buildAccommodationQuery({ accommodationType: 'self_contain' });
-  assert.deepEqual(result.accommodationType, /^self_contain$/i);
+  assert.equal(result.accommodationType, 'self-contain');
 });
 
 test('amenities should be translated to $all array filter', () => {
@@ -77,8 +77,8 @@ test('combined filters should serialise into a single Mongo query object', () =>
 
   assert.deepEqual(result.state, /^Edo$/i);
   assert.deepEqual(result.lga, /^Oredo$/i);
-  assert.deepEqual(result.price, { $gte: 200000, $lte: 500000 });
-  assert.deepEqual(result.accommodationType, /^self_contain$/i);
+  assert.deepEqual(result.annualRent, { $gte: 200000, $lte: 500000 });
+  assert.equal(result.accommodationType, 'self-contain');
   assert.deepEqual(result.amenities, { $all: ['borehole', 'electricity'] });
 });
 

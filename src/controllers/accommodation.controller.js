@@ -1,6 +1,8 @@
 import { searchAccommodations } from '../services/accommodation.service.js';
 import { successResponse, errorResponse } from '../utils/response.js';
 
+// Query values arrive as strings in Express, so we convert and validate them here.
+// This keeps controller logic strict without exposing raw MongoDB errors to clients.
 const parseNumber = (value, fieldName) => {
   if (value === undefined || value === null || value === '') {
     return undefined;
@@ -16,6 +18,8 @@ const parseNumber = (value, fieldName) => {
 
 const normalizeString = (value) => (value === undefined || value === null ? '' : String(value).trim());
 
+// Housing feed endpoint: validate request-level input, then delegate to the search service.
+// Note: this module does not own the Accommodation schema; it adapts to the existing contract.
 export const getAccommodationFeed = async (req, res) => {
   try {
     const {

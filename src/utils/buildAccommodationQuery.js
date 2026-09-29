@@ -1,7 +1,28 @@
+import mongoose from 'mongoose';
+
+// Shared helpers for safely normalizing query strings.
+// We avoid trusting raw req.query values and trim/escape them before building Mongo filters.
 const normalizeValue = (value) => String(value ?? '').trim();
+
+const normalizeEnumValue = (value) => normalizeValue(value).toLowerCase().replace(/[_\s]+/g, '-');
 
 const escapeRegExp = (value = '') => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const toObjectIdOrValue = (value) => {
+  const normalized = normalizeValue(value);
+  if (!normalized) {
+    return null;
+  }
+
+  if (mongoose.Types.ObjectId.isValid(normalized)) {
+    return new mongoose.Types.ObjectId(normalized);
+  }
+
+  return normalized;
+};
+
+// Amenities are accepted as a comma-delimited string such as "borehole,electricity".
+// The schema contract allows a final agreed list; we keep the parsing flexible until that list is frozen.
 const parseAmenities = (amenities) => {
   if (!amenities) {
     return [];
@@ -9,16 +30,18 @@ const parseAmenities = (amenities) => {
 
   if (Array.isArray(amenities)) {
     return amenities
-      .map((item) => normalizeValue(item))
+      .map((item) => normalizeEnumValue(item))
       .filter(Boolean);
   }
 
   return String(amenities)
     .split(',')
-    .map((item) => normalizeValue(item))
+    .map((item) => normalizeEnumValue(item))
     .filter(Boolean);
 };
 
+// Base feed contract: normal housing search should only include listings that are both
+// verified and active. This keeps status and verificationStatus separate as required.
 export const buildAccommodationQuery = ({
   state,
   lga,
@@ -34,14 +57,22 @@ export const buildAccommodationQuery = ({
     status: 'active',
   };
 
-  const selectedState = normalizeValue(state) || normalizeValue(userState);
+  const selectedState = toObjectIdOrValue(state) ?? toObjectIdOrValue(userState);
   if (selectedState) {
-    filters.state = new RegExp(`^${escapeRegExp(selectedState)}$`, 'i');
+    if (selectedState instanceof mongoose.Types.ObjectId) {
+      filters.state = selectedState;
+    } else {
+      filters.state = new RegExp(`^${escapeRegExp(selectedState)}$`, 'i');
+    }
   }
 
-  const selectedLga = normalizeValue(lga) || normalizeValue(userLga);
+  const selectedLga = toObjectIdOrValue(lga) ?? toObjectIdOrValue(userLga);
   if (selectedLga) {
-    filters.lga = new RegExp(`^${escapeRegExp(selectedLga)}$`, 'i');
+    if (selectedLga instanceof mongoose.Types.ObjectId) {
+      filters.lga = selectedLga;
+    } else {
+      filters.lga = new RegExp(`^${escapeRegExp(selectedLga)}$`, 'i');
+    }
   }
 
   if (minPrice !== undefined || maxPrice !== undefined) {
@@ -64,21 +95,21 @@ export const buildAccommodationQuery = ({
     }
 
     if (parsedMinPrice !== undefined || parsedMaxPrice !== undefined) {
-      filters.price = {};
+      filters.annualRent = {};
 
       if (parsedMinPrice !== undefined) {
-        filters.price.$gte = parsedMinPrice;
+        filters.annualRent.$gte = parsedMinPrice;
       }
 
       if (parsedMaxPrice !== undefined) {
-        filters.price.$lte = parsedMaxPrice;
+        filters.annualRent.$lte = parsedMaxPrice;
       }
     }
   }
 
-  const normalizedType = normalizeValue(accommodationType);
+  const normalizedType = normalizeEnumValue(accommodationType);
   if (normalizedType) {
-    filters.accommodationType = new RegExp(`^${escapeRegExp(normalizedType)}$`, 'i');
+    filters.accommodationType = normalizedType;
   }
 
   const amenityValues = parseAmenities(amenities);
