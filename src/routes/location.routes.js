@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import express from 'express';
+import { getStates, getLgasByState } from '../controllers/location.controller.js';
 
-const router = Router();
+const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.status(200).json({ status: 'success', message: 'Location Route works' });
-});
+router.get('/states', getStates);
+router.get('/lgas', getLgasByState);
 
 export default router;
