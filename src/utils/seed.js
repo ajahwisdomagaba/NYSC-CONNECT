@@ -20,6 +20,7 @@ const pilotListings = [
     contact_whatsapp: '+2348011223344',
     source: 'Alumni Referral',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Single room in shared flat for Corps Members',
@@ -35,6 +36,7 @@ const pilotListings = [
     contact_whatsapp: '+2348022334455',
     source: 'Corper CDS Rep',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Studio apartment near Computer Village PPA hub',
@@ -50,6 +52,7 @@ const pilotListings = [
     contact_whatsapp: '+2348033445566',
     source: 'CDS President',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Room and parlor mini flat near Oregun',
@@ -65,6 +68,7 @@ const pilotListings = [
     contact_whatsapp: '+2348044556677',
     source: 'Verified Local Landlord',
     status: 'active',
+    verification_status: 'verified',
   },
 
   // --- OYO: IBADAN NORTH LGA (4 listings) ---
@@ -82,6 +86,7 @@ const pilotListings = [
     contact_whatsapp: '+2348055667788',
     source: 'Alumni Referral',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Single room lodge at Bodija',
@@ -97,6 +102,7 @@ const pilotListings = [
     contact_whatsapp: '+2348066778899',
     source: 'Corper CDS Rep',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Corpers lodge sharing unit - Sango / UI axis',
@@ -112,6 +118,7 @@ const pilotListings = [
     contact_whatsapp: '+2348077889900',
     source: 'CDS President',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Standard mini-flat near Secretariat Agodi',
@@ -127,6 +134,7 @@ const pilotListings = [
     contact_whatsapp: '+2348088990011',
     source: 'Verified Local Landlord',
     status: 'active',
+    verification_status: 'verified',
   },
 
   // --- LAGOS: KOSOFE LGA (4 listings) ---
@@ -144,6 +152,7 @@ const pilotListings = [
     contact_whatsapp: '+2348099001122',
     source: 'Alumni Referral',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Budget room in shared flat - Ojota axis',
@@ -159,6 +168,7 @@ const pilotListings = [
     contact_whatsapp: '+2348100112233',
     source: 'Corper CDS Rep',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Gated self-contain in Ketu / Alapere',
@@ -174,6 +184,7 @@ const pilotListings = [
     contact_whatsapp: '+2348111223344',
     source: 'CDS President',
     status: 'active',
+    verification_status: 'verified',
   },
   {
     title: 'Decent 1-bedroom flat in Mile 12 / Owode axis',
@@ -189,6 +200,7 @@ const pilotListings = [
     contact_whatsapp: '+2348122334455',
     source: 'Verified Local Landlord',
     status: 'active',
+    verification_status: 'verified',
   },
 ];
 

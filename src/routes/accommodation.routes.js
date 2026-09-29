@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  getAccommodationFeed,
   createAccommodation,
   getAccommodation,
   updateAccommodation,
@@ -13,9 +14,7 @@ import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-// Abu's GET '/' (search/feed) mounts on this same path; merge the two routers
-// or mount both under /api/v1/accommodations in app.js.
-
+router.get('/', getAccommodationFeed);
 router.post('/', protect, restrictTo('admin', 'landlord'), createAccommodation);
 
 router

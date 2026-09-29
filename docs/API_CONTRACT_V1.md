@@ -1,6 +1,5 @@
 
-
-# NYSC Connect — Frontend & Mobile API Specification (v1)
+NYSC Connect — Frontend & Mobile API Specification (v1)
 
 * **Base URL:** `http://localhost:5000/api/v1` 
 (Local) / `https://<staging-app>[.onrender.com/api/v1](https://.onrender.com/api/v1)` (Staging)
@@ -27,7 +26,9 @@ Creates a new corps member account.
   "name": "Chinedu Okafor",
   "email": "chinedu@example.com",
   "phone": "+2348012345678",
-  "password": "Password123!"
+  "password": "Password123!",
+  "state": "Lagos",
+  "lga": "Kosofe"
 }
 
 ```
