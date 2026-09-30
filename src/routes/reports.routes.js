@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import express from 'express';
+import { createReport } from '../controllers/report.controller.js';
+import { protect } from '../middlewares/auth.middleware.js';
 
-const router = Router();
+const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.status(200).json({ status: 'success', message: 'Report Route works' });
-});
+router.post('/', protect, createReport);
 
 export default router;
