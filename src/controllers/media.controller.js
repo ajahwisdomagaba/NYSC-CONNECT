@@ -9,7 +9,7 @@ const uploadAccommodationImages = async (req, res, next) => {
       });
     }
 
-    const imageUrls = await Promise.all(
+    const images = await Promise.all(
       req.files.map((file) => uploadImage(file.buffer)),
     );
 
@@ -17,7 +17,7 @@ const uploadAccommodationImages = async (req, res, next) => {
       status: "success",
       message: "Images uploaded successfully",
       data: {
-        photos: imageUrls,
+        images,
       },
     });
   } catch (error) {
