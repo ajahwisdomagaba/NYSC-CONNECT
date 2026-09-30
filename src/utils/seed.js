@@ -168,7 +168,6 @@ const pilotListings = [
     contact_whatsapp: '+2348100112233',
     source: 'Corper CDS Rep',
     status: 'active',
-    verification_status: 'verified',
   },
   {
     title: 'Gated self-contain in Ketu / Alapere',

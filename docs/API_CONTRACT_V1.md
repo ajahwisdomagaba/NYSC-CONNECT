@@ -65,7 +65,7 @@ Authenticates a user and returns a Bearer JWT.
 
 ```json
 {
-  "email": "chinedu@example.com",
+  "phonenumber": "chinedu@example.com",
   "password": "Password123!"
 }
 
