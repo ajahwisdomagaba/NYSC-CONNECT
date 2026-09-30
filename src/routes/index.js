@@ -5,6 +5,7 @@ import localInfoRoutes from './localinfo.route.js';
 import savedRoutes from './saved.routes.js';
 import reportsRoutes from './reports.routes.js'
 import locationRoutes from './location.routes.js';
+import mediaRoutes from './media.routes.js';
 
 
 const router = Router();
@@ -21,5 +22,6 @@ router.use('/local-info', localInfoRoutes);
 router.use('/saved', savedRoutes);
 router.use('/reports', reportsRoutes);
 router.use('/locations', locationRoutes);
+router.use('/media', mediaRoutes);
 
 export default router;
