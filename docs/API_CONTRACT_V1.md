@@ -65,7 +65,7 @@ Authenticates a user and returns a Bearer JWT.
 
 ```json
 {
-  "phonenumber": "chinedu@example.com",
+  "phonenumber": "+2348012345678",
   "password": "Password123!"
 }
 
@@ -198,7 +198,7 @@ Searches and filters active listings.
         "address": "14 Allen Avenue, Ikeja, Lagos",
         "state": "Lagos",
         "lga": "Ikeja",
-        "ppa_proximity": "7 mins bus ride to State Secretariat / NYSC Camp",
+        "ppa_proximity": "Approximately 7 mins bus ride to State Secretariat / NYSC Camp",
         "photos": ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"],
         "property_info": ["borehole_water", "prepaid_meter", "fenced_gate"],
         "contact_phone": "+2348011223344",
@@ -235,7 +235,7 @@ Retrieves detailed information for a single lodge.
       "address": "14 Allen Avenue, Ikeja, Lagos",
       "state": "Lagos",
       "lga": "Ikeja",
-      "ppa_proximity": "7 mins bus ride to State Secretariat",
+      "ppa_proximity": "Approximately 7 mins bus ride to State Secretariat",
       "photos": ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"],
       "property_info": ["borehole_water", "prepaid_meter", "fenced_gate"],
       "contact_phone": "+2348011223344",
@@ -266,7 +266,7 @@ Creates a new accommodation listing. Supports `multipart/form-data` for direct i
   "address": "8 Kudirat Abiola Way, Oregun, Ikeja, Lagos",
   "state": "Lagos",
   "lga": "Ikeja",
-  "ppa_proximity": "12 mins transit to Ikeja PPA clusters",
+  "ppa_proximity": "Approximately 12 mins transit to Ikeja PPA clusters",
   "contact_phone": "+2348044556677",
   "contact_whatsapp": "+2348044556677",
   "property_info": ["car_park", "borehole_water", "fenced_gate"]
@@ -291,7 +291,7 @@ Creates a new accommodation listing. Supports `multipart/form-data` for direct i
 
 ### `GET /local-info`
 
-Fetches community safety and transport tips by location.
+Fetches community security and transport tips by location.
 
 * **Access:** Public
 * **Query Parameters:** `state`, `lga`, `category` (`transport`, `health`, `security`)

@@ -46,6 +46,7 @@ export const register = async (req, res) => {
       state,
       lga,
       ppa_name: ppa_name || null,
+      ppa_proximity: ppa_proximity || null,
       role: "corps_member",
     });
 
@@ -62,6 +63,7 @@ export const register = async (req, res) => {
         state: user.state,
         lga: user.lga,
         ppa_name: user.ppa_name,
+        ppa_proximity: user.ppa_proximity,
         role: user.role,
       },
     });
@@ -106,6 +108,7 @@ export const login = async (req, res) => {
         state: user.state,
         lga: user.lga,
         ppa_name: user.ppa_name,
+        ppa_proximity: user.ppa_proximity,
         role: user.role,
       },
     });
@@ -119,7 +122,7 @@ export const login = async (req, res) => {
 // @access  Private (Protected)
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select("-password_hash");
     return res.status(200).json({ user });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });

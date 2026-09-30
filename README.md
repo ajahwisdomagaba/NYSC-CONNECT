@@ -74,10 +74,10 @@ Trusted housing is the foundation of this MVP. The backend provides:
 | Ojo Babajide F | Housing data intake: Accommodation schema, single listing view, create, update, archive | `feat/housing-intake` |
 | Abu Marvellous | Housing search and feed: `GET /accommodations`, state/LGA scoping, price filtering, pagination, indexing | `feat/housing-search-feed` |
 | Ahiamadu Allen | Media and storage: Cloudinary/S3 with Multer, multi-image upload (3-image cap), compression, secure URLs | `feat/media-upload` |
-| Kanu Chidera | Local information guide: schema and endpoints (transport, health, security) | `feat/local-info` |
-| Patrick Benjamin | Saved/favorite items: schema, save, list, remove | `feat/saved-items` |
-| Erisuena Oghenetaga | Safety and admin queue: reports schema, submit report, admin moderation | `feat/reports-admin` |
-| Ibeawuchi Chibueze Benjamin | State/LGA reference data, `seed.js`, Postman collection and OpenAPI handoff | `feat/locations-seed-docs` |
+| Ojo Babjide F | Local information guide: schema and endpoints (transport, health, security) | `feat/local-info` |
+| Oghenetega Erisuena | Saved/favorite items: schema, save, list, remove | `feat/saved-items` |
+| Wisdom (Coordinator) | Safety and admin queue: reports schema, submit report, admin moderation | `feat/reports-admin` |
+| Wisdom (Coordinator) | State/LGA reference data, `seed.js`, Postman collection and OpenAPI handoff | `feat/locations-seed-docs` |
 
 ## Project structure
 

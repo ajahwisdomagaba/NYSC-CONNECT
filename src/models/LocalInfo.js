@@ -16,10 +16,10 @@ const localInfoSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: [
-        'transportation',
+        'transport',
         'ppa_information',
-        'healthcare',
-        'security_safety',
+        'health',
+        'security',
         'food_services',
         'essential_services',
       ],

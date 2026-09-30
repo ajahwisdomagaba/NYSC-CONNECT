@@ -33,6 +33,11 @@ const UserSchema = new mongoose.Schema(
       default: null,
       trim: true,
     },
+    ppa_proximity: {
+      type: String,
+      default: null,
+      trim: true,
+    },
     role: {
       type: String,
       enum: ["corps_member", "admin"],
