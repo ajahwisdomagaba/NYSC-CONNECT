@@ -21,17 +21,30 @@ const reportSchema = new mongoose.Schema(
     reason: {
       type: String,
       required: true,
-      enum: ['outdated', 'incorrect', 'misleading', 'suspicious'],
+      enum: ['outdated', 'incorrect', 'misleading', 'suspicious', 'scam'],
     },
     details: {
       type: String,
       required: [true, 'Report explanation is required'],
       trim: true,
+      maxlength: [500, 'Report explanation must be less than 500 characters'],
     },
     status: {
       type: String,
-      enum: ['pending', 'reviewed', 'dismissed', 'action_taken'],
+      enum: ['pending', 'reviewed', 'resolved', 'dismissed'],
       default: 'pending',
+      trim: true,
+    },
+    admin_action: {
+      type: String,
+      enum: ['pending', 'resolved', 'dismissed'],
+      default: 'pending',
+      trim: true,
+    },
+    admin_notes: {
+      type: String,
+      maxlength: [500, 'Admin action details must be less than 500 characters'],
+      trim: true,
     },
   },
   {

@@ -7,7 +7,7 @@ import { searchAccommodations } from '../services/accommodation.service.js';
 import Accommodation from '../models/Accommodation.js';
 
 const safeQuery = {
-  verificationStatus: 'verified',
+  verification_status: 'verified',
   status: 'active',
 };
 
@@ -31,7 +31,7 @@ test('lga filter should apply exact LGA match case-insensitively', () => {
 
 test('minimum price should apply $gte filter', () => {
   const result = buildAccommodationQuery({ minPrice: 200000 });
-  assert.equal(result.verificationStatus, 'verified');
+  assert.equal(result.verification_status, 'verified');
   assert.equal(result.status, 'active');
   assert.deepEqual(result.annualRent, { $gte: 200000 });
 });
@@ -139,7 +139,7 @@ test('invalid price range should reject min greater than max', () => {
 
 test('feed query should always require verified + active listing state', () => {
   const result = buildAccommodationQuery({ state: 'Edo' });
-  assert.equal(result.verificationStatus, 'verified');
+  assert.equal(result.verification_status, 'verified');
   assert.equal(result.status, 'active');
 });
 

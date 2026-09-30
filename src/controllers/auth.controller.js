@@ -21,6 +21,13 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
 
+    // Public registration is corps members only at this stage
+    if (role && String(role).toLowerCase() !== "corps_member") {
+      return res.status(403).json({
+        message: "Self-registration is limited to corps members at this stage",
+      });
+    }
+
     // Check if phone number is already registered
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
@@ -39,7 +46,7 @@ export const register = async (req, res) => {
       state,
       lga,
       ppa_name: ppa_name || null,
-      role: role && ["corps_member", "admin"].includes(role) ? role : "corps_member",
+      role: "corps_member",
     });
 
     // Generate JWT token

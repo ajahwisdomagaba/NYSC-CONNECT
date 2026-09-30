@@ -7,7 +7,7 @@ import { buildPaginationResponse, validatePagination } from '../utils/pagination
 const resolveSort = (sortValue = 'newest') => {
   switch (sortValue) {
     case 'newest':
-      return { createdAt: -1 };
+      return { created_at: -1 };
     case 'price_asc':
       return { annualRent: 1 };
     case 'price_desc':

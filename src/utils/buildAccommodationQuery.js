@@ -53,7 +53,7 @@ export const buildAccommodationQuery = ({
   userLga,
 } = {}) => {
   const filters = {
-    verificationStatus: 'verified',
+    verification_status: 'verified',
     status: 'active',
   };
 
