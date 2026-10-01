@@ -17,10 +17,10 @@ const localInfoSchema = new mongoose.Schema(
       required: true,
       enum: [
         'transport',
-        'ppa_information',
+        'ppa',
         'health',
         'security',
-        'food_services',
+        'food',
         'essential_services',
       ],
     },

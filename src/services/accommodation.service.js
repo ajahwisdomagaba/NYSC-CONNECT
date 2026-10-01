@@ -52,6 +52,9 @@ export const searchAccommodations = async ({
 
   return {
     ...buildPaginationResponse({ total, page: safePage, limit: safeLimit }),
-    results,
+    results: results.map((listing) => ({
+      ...listing,
+      last_updated: listing.last_updated_at ?? listing.created_at ?? null,
+    })),
   };
 };

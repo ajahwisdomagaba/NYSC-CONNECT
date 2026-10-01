@@ -294,7 +294,7 @@ Creates a new accommodation listing. Supports `multipart/form-data` for direct i
 Fetches community security and transport tips by location.
 
 * **Access:** Public
-* **Query Parameters:** `state`, `lga`, `category` (`transport`, `health`, `security`)
+* **Query Parameters:** `state`, `lga`, `category` (`transport`, `health`, `security`, `ppa`, `food`, `essential_services`)
 * **Response (`200 OK`):**
 
 ```json

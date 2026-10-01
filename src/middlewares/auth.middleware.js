@@ -13,7 +13,12 @@ export const protect = async (req, res, next) => {
       return errorResponse(res, 401, 'Authentication token missing. Please log in.');
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return errorResponse(res, 500, 'JWT_SECRET is not defined');
+    }
+
+    const decoded = jwt.verify(token, secret);
     const user = await User.findById(decoded.id || decoded._id);
 
     if (!user) {

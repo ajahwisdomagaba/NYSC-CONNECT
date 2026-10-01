@@ -2,11 +2,40 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// Helper function to sign JWT tokens
+const jwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not defined");
+  }
+  return secret;
+};
+
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || "secret", {
-    expiresIn: "7d",
+  return jwt.sign({ id }, jwtSecret(), {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
+};
+
+const optionalString = (value) => {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  const trimmed = String(value).trim();
+  return trimmed === "" ? null : trimmed;
+};
+
+const publicUser = (user) => {
+  const ppa = user.ppa_name ?? null;
+  return {
+    id: user._id,
+    name: user.name,
+    phone: user.phone,
+    state: user.state,
+    lga: user.lga,
+    ppa_name: ppa,
+    ppa,
+    ppa_proximity: user.ppa_proximity ?? null,
+    role: user.role,
+  };
 };
 
 // @desc    Register a new user
@@ -14,7 +43,7 @@ const generateToken = (id) => {
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { name, phone, password, state, lga, ppa_name, role } = req.body;
+    const { name, phone, password, state, lga, ppa, ppa_name, ppa_proximity, role } = req.body;
 
     // Validate required input
     if (!name || !phone || !password || !state || !lga) {
@@ -45,8 +74,8 @@ export const register = async (req, res) => {
       password_hash: hashedPassword,
       state,
       lga,
-      ppa_name: ppa_name || null,
-      ppa_proximity: ppa_proximity || null,
+      ppa_name: optionalString(ppa ?? ppa_name) ?? null,
+      ppa_proximity: optionalString(ppa_proximity) ?? null,
       role: "corps_member",
     });
 
@@ -56,16 +85,7 @@ export const register = async (req, res) => {
     return res.status(201).json({
       message: "User registered successfully",
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        phone: user.phone,
-        state: user.state,
-        lga: user.lga,
-        ppa_name: user.ppa_name,
-        ppa_proximity: user.ppa_proximity,
-        role: user.role,
-      },
+      user: publicUser(user),
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
@@ -101,16 +121,7 @@ export const login = async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        phone: user.phone,
-        state: user.state,
-        lga: user.lga,
-        ppa_name: user.ppa_name,
-        ppa_proximity: user.ppa_proximity,
-        role: user.role,
-      },
+      user: publicUser(user),
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
@@ -118,12 +129,58 @@ export const login = async (req, res) => {
 };
 
 // @desc    Get current logged in user profile
-// @route   GET /api/auth/me
+// @route   GET /api/auth/me and GET /api/v1/users/me
 // @access  Private (Protected)
 export const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password_hash");
-    return res.status(200).json({ user });
+    return res.status(200).json({ user: publicUser(user) });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// @desc    Update current user's location / PPA
+// @route   PATCH /api/v1/users/me
+// @access  Private (Protected)
+export const updateMe = async (req, res) => {
+  try {
+    const { state, lga, ppa, ppa_name, ppa_proximity } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(401).json({ message: "User account no longer exists." });
+    }
+
+    if (state !== undefined) {
+      const nextState = optionalString(state);
+      if (!nextState) {
+        return res.status(400).json({ message: "state cannot be empty" });
+      }
+      user.state = nextState;
+    }
+
+    if (lga !== undefined) {
+      const nextLga = optionalString(lga);
+      if (!nextLga) {
+        return res.status(400).json({ message: "lga cannot be empty" });
+      }
+      user.lga = nextLga;
+    }
+
+    if (ppa !== undefined || ppa_name !== undefined) {
+      user.ppa_name = optionalString(ppa !== undefined ? ppa : ppa_name);
+    }
+
+    if (ppa_proximity !== undefined) {
+      user.ppa_proximity = optionalString(ppa_proximity);
+    }
+
+    await user.save();
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      user: publicUser(user),
+    });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }

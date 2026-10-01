@@ -45,7 +45,7 @@ Trusted housing is the foundation of this MVP. The backend provides:
 - A normalized, indexed MongoDB schema designed for nationwide scale (36 states, 774 LGAs) and fast search and filtering
 - Media storage for verified property photos, with strict upload limits
 - Scam and listing reporting, with an admin moderation queue
-- Local information guides (transport, health, security) and saved/favorite items
+- Local information guides (transport, health, security, ppa, food, essential_services) and saved/favorite items
 - Seed scripts so the platform launches with realistic data for frontend testing
 
 ## Tech stack
@@ -292,7 +292,7 @@ Image upload and secure URL generation for listings: up to 3 images per listing,
 
 | Method | Route | Access |
 |---|---|---|
-| GET | `/local-info` | Authenticated. Categorized: transport, health, security |
+| GET | `/local-info` | Authenticated. Categorized: transport, health, security, ppa, food, essential_services |
 | GET | `/local-info/:id` | Authenticated |
 | POST | `/local-info` | Admin |
 

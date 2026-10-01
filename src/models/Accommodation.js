@@ -177,6 +177,10 @@ accommodationSchema.virtual('annualRent')
   .get(function () { return this.price; })
   .set(function (v) { this.price = v; });
 
+accommodationSchema.virtual('last_updated').get(function () {
+  return this.last_updated_at;
+});
+
 // Search Pipeline & Moderation Indexes
 accommodationSchema.index({ state: 1, lga: 1, status: 1 });
 accommodationSchema.index({ price: 1 });

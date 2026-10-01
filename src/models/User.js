@@ -44,8 +44,21 @@ const UserSchema = new mongoose.Schema(
       default: "corps_member",
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
+  {
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
 );
+
+UserSchema.virtual("ppa")
+  .get(function () {
+    return this.ppa_name ?? null;
+  })
+  .set(function (value) {
+    this.ppa_name = value ?? null;
+  });
+
 UserSchema.index({ status: 1, lga: 1 });
 
 export default mongoose.model("User", UserSchema);
