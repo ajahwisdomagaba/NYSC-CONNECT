@@ -1,6 +1,6 @@
 # NYSC Connect — Frontend & Mobile API Specification (v1.1 Verified)
 
-* **Base URL:** `http://localhost:5000/api/v1` (Local) / `https://<staging-app>[.onrender.com/api/v1](https://.onrender.com/api/v1)` (Staging)
+* **Base URL:** `http://localhost:5000/api/v1` (Local) / `https://nysc-connecct[.onrender.com/api/v1](https://nysc-conect.onrender.com/api/v1)` (Staging)
 * **Default Content-Type:** `application/json` (except image upload which requires `multipart/form-data`)
 
 
