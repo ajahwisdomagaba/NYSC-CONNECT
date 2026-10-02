@@ -205,11 +205,11 @@ const pilotListings = [
 
 const seedDatabase = async () => {
   try {
-    if (!process.env.DATABASE_URL) {
-      throw new Error('DATABASE_URL is not defined in environment variables');
+    if (!process.env.DATABASE_URI) {
+      throw new Error('DATABASE_URI is not defined in environment variables');
     }
 
-    await mongoose.connect(process.env.DATABASE_URL);
+    await mongoose.connect(process.env.DATABASE_URI);
     console.log('MongoDB connected for seeding...');
 
     // Clear existing pilot listings
