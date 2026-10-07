@@ -40,8 +40,58 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["corps_member", "admin"],
+      enum: ["corps_member", "landlord", "agent", "admin"],
       default: "corps_member",
+    },
+    account_verification: {
+      status: {
+        type: String,
+        enum: ["not_submitted", "pending", "verified", "rejected"],
+        default: "not_submitted",
+      },
+      id_type: {
+        type: String,
+        enum: ["nin", "pvc", "drivers_license", "passport"],
+      },
+      id_document_url: {
+        type: String,
+        trim: true,
+      },
+      authority_type: {
+        type: String,
+        enum: [
+          "utility_bill",
+          "proof_of_ownership",
+          "authorization_letter",
+          "agency_registration",
+        ],
+      },
+      authority_document_url: {
+        type: String,
+        trim: true,
+      },
+      prepaid_meter_number: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      zero_upfront_fee_agreed: {
+        type: Boolean,
+        default: false,
+      },
+      rejection_reason: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      submitted_at: {
+        type: Date,
+        default: null,
+      },
+      reviewed_at: {
+        type: Date,
+        default: null,
+      },
     },
   },
   {
@@ -60,5 +110,6 @@ UserSchema.virtual("ppa")
   });
 
 UserSchema.index({ status: 1, lga: 1 });
+UserSchema.index({ role: 1, "account_verification.status": 1 });
 
 export default mongoose.model("User", UserSchema);

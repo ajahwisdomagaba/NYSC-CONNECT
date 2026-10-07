@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   getAccommodationFeed,
+  getMyAccommodations,
   createAccommodation,
   getAccommodation,
   updateAccommodation,
@@ -15,13 +16,14 @@ import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 router.get('/', getAccommodationFeed);
-router.post('/', protect, restrictTo('admin', 'landlord'), createAccommodation);
+router.get('/mine', protect, restrictTo('landlord', 'agent', 'admin'), getMyAccommodations);
+router.post('/', protect, restrictTo('admin', 'landlord', 'agent'), createAccommodation);
 
 router
   .route('/:id')
   .get(protect, getAccommodation)
-  .put(protect, restrictTo('admin', 'landlord'), updateAccommodation)
-  .delete(protect, restrictTo('admin', 'landlord'), deleteAccommodation);
+  .put(protect, restrictTo('admin', 'landlord', 'agent'), updateAccommodation)
+  .delete(protect, restrictTo('admin', 'landlord', 'agent'), deleteAccommodation);
 
 export default router;
 

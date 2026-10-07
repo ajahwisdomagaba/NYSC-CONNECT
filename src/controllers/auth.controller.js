@@ -23,9 +23,14 @@ const optionalString = (value) => {
   return trimmed === "" ? null : trimmed;
 };
 
+const PUBLIC_ROLES = ["corps_member", "landlord", "agent"];
+
+const normalizeRole = (role) =>
+  String(role).trim().toLowerCase().replace(/[\s-]+/g, "_");
+
 const publicUser = (user) => {
   const ppa = user.ppa_name ?? null;
-  return {
+  const profile = {
     id: user._id,
     name: user.name,
     phone: user.phone,
@@ -36,6 +41,12 @@ const publicUser = (user) => {
     ppa_proximity: user.ppa_proximity ?? null,
     role: user.role,
   };
+
+  if (user.role === "landlord" || user.role === "agent") {
+    profile.verification_status = user.account_verification?.status || "not_submitted";
+  }
+
+  return profile;
 };
 
 // @desc    Register a new user
@@ -50,10 +61,17 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
 
-    // Public registration is corps members only at this stage
-    if (role && String(role).toLowerCase() !== "corps_member") {
+    const assignedRole = role ? normalizeRole(role) : "corps_member";
+
+    if (assignedRole === "admin") {
       return res.status(403).json({
-        message: "Self-registration is limited to corps members at this stage",
+        message: "Self-registration as an administrator is not permitted",
+      });
+    }
+
+    if (!PUBLIC_ROLES.includes(assignedRole)) {
+      return res.status(400).json({
+        message: "Invalid role. Must be corps_member, landlord, or agent",
       });
     }
 
@@ -76,7 +94,7 @@ export const register = async (req, res) => {
       lga,
       ppa_name: optionalString(ppa ?? ppa_name) ?? null,
       ppa_proximity: optionalString(ppa_proximity) ?? null,
-      role: "corps_member",
+      role: assignedRole,
     });
 
     // Generate JWT token

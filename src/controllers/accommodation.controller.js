@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Accommodation, { STATUSES, VERIFICATION_STATUSES } from '../models/Accommodation.js';
 import { searchAccommodations } from '../services/accommodation.service.js';
 import { successResponse, errorResponse } from '../utils/response.js';
+import { buildPaginationResponse, validatePagination } from '../utils/pagination.js';
 
 // Fields a client may set.
 const CONTENT_FIELDS = [
@@ -79,6 +80,7 @@ const parseNumber = (value, fieldName) => {
 
 const normalizeString = (value) => (value === undefined || value === null ? '' : String(value).trim());
 const isAdmin = (user) => user && (user.role === 'admin' || user.role === 'superadmin');
+const isListingRole = (user) => user && (user.role === 'landlord' || user.role === 'agent');
 const isOwner = (user, doc) => {
   if (!user || !doc) return false;
   const userId = String(user._id || user.id);
@@ -147,12 +149,44 @@ export const getAccommodationFeed = catchAsync(async (req, res) => {
 
 // --- CRUD & INTAKE (Ojo Babajide) ---
 
-// POST /api/v1/accommodations (Admin / Landlord)
+const paginateListings = async (filter, page, limit) => {
+  let pagination;
+  try {
+    pagination = validatePagination({ page, limit });
+  } catch (err) {
+    const error = new Error(err.message);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const [results, total] = await Promise.all([
+    Accommodation.find(filter).sort({ created_at: -1 }).skip(pagination.skip).limit(pagination.limit),
+    Accommodation.countDocuments(filter),
+  ]);
+
+  return {
+    ...buildPaginationResponse({ total, page: pagination.page, limit: pagination.limit }),
+    results,
+  };
+};
+
+// POST /api/v1/accommodations (Admin / Landlord / Agent)
+const postingBlockReason = (user) => {
+  const status = user.account_verification?.status || 'not_submitted';
+  if (status === 'pending') {
+    return 'Your account verification is still pending admin review';
+  }
+  if (status === 'rejected') {
+    return 'Your account verification was rejected. Update your documents and submit again';
+  }
+  return 'Submit identity and authority documents before posting a listing';
+};
+
 export const createAccommodation = catchAsync(async (req, res) => {
   const user = req.user || {};
 
-  if (user.role === 'landlord' && !user.isVetted) {
-    return errorResponse(res, 403, 'Your landlord account has not been verified yet');
+  if (isListingRole(user) && user.account_verification?.status !== 'verified') {
+    return errorResponse(res, 403, postingBlockReason(user));
   }
 
   const data = pick(req.body, CONTENT_FIELDS);
@@ -183,14 +217,89 @@ export const createAccommodation = catchAsync(async (req, res) => {
     if (req.body.verificationStatus && VERIFICATION_STATUSES.includes(req.body.verificationStatus)) {
       doc.verification_status = req.body.verificationStatus;
     }
-  } else {
+  } else if (isListingRole(user)) {
     doc.landlord = user._id || null;
     doc.status = 'active';
     doc.verification_status = 'pending';
+  } else {
+    return errorResponse(res, 403, 'Only landlords and agents can post listings');
   }
 
   await doc.save();
-  return successResponse(res, 201, 'Accommodation created successfully', doc);
+
+  const message = doc.verification_status === 'pending'
+    ? 'Accommodation submitted and is pending admin verification'
+    : 'Accommodation created successfully';
+
+  return successResponse(res, 201, message, doc);
+});
+
+// GET /api/v1/accommodations/mine (Landlord / Agent)
+export const getMyAccommodations = catchAsync(async (req, res) => {
+  const { verificationStatus, page = 1, limit = 10 } = req.query;
+  const userId = req.user._id;
+  const filter = {
+    $or: [{ landlord: userId }, { created_by: userId }],
+  };
+
+  if (verificationStatus && verificationStatus !== 'all') {
+    if (!VERIFICATION_STATUSES.includes(verificationStatus)) {
+      return errorResponse(res, 400, `Invalid verificationStatus. Allowed: ${VERIFICATION_STATUSES.join(', ')}, all`);
+    }
+    filter.verification_status = verificationStatus;
+  }
+
+  const data = await paginateListings(filter, page, limit);
+  return successResponse(res, 200, 'Your accommodations fetched successfully', data);
+});
+
+// GET /api/v1/admin/accommodations
+export const listAdminAccommodations = catchAsync(async (req, res) => {
+  const { verificationStatus = 'pending', page = 1, limit = 20 } = req.query;
+  const allowed = [...VERIFICATION_STATUSES, 'all'];
+
+  if (!allowed.includes(verificationStatus)) {
+    return errorResponse(res, 400, `Invalid verificationStatus. Allowed: ${allowed.join(', ')}`);
+  }
+
+  const filter = verificationStatus === 'all' ? {} : { verification_status: verificationStatus };
+  const data = await paginateListings(filter, page, limit);
+  return successResponse(res, 200, 'Accommodations fetched successfully', data);
+});
+
+// PATCH /api/v1/admin/accommodations/:id/verification
+export const verifyAccommodation = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) {
+    return errorResponse(res, 404, 'Listing not found');
+  }
+
+  const verificationStatus = req.body.verificationStatus || req.body.verification_status;
+  const decisions = ['verified', 'rejected'];
+  if (!decisions.includes(verificationStatus)) {
+    return errorResponse(res, 400, 'verificationStatus must be verified or rejected');
+  }
+
+  const doc = await Accommodation.findById(id);
+  if (!doc) {
+    return errorResponse(res, 404, 'Listing not found');
+  }
+
+  doc.verification_status = verificationStatus;
+  if (verificationStatus === 'verified') {
+    doc.status = 'active';
+  }
+  if (req.user && req.user._id) {
+    doc.last_updated_by = req.user._id;
+  }
+  doc.last_updated_at = new Date();
+  await doc.save();
+
+  const message = verificationStatus === 'verified'
+    ? 'Listing verified and is now public'
+    : 'Listing rejected and will stay hidden from the public';
+
+  return successResponse(res, 200, message, doc);
 });
 
 // GET /api/v1/accommodations/:id

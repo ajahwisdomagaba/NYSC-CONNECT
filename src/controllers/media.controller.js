@@ -25,4 +25,25 @@ const uploadAccommodationImages = async (req, res, next) => {
   }
 };
 
-export { uploadAccommodationImages };
+const uploadVerificationDocument = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        status: "error",
+        message: "Please upload a document image",
+      });
+    }
+
+    const document = await uploadImage(req.file.buffer, "nysc-connect/verification");
+
+    return res.status(200).json({
+      status: "success",
+      message: "Verification document uploaded successfully",
+      data: { document },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { uploadAccommodationImages, uploadVerificationDocument };
