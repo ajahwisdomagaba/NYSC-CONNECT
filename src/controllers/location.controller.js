@@ -36,7 +36,7 @@ const found = LOCATIONS_DATA.find((loc) => loc.state.toLowerCase() === state.tri
 const lgas = found ? found.lgas : [];
 return res.status(200).json({
     status: 'success',
-    message: 'LGA retrieved successfully',
+    message: 'LGAs retrieved successfully',
     data: { state, lgas }
 });
 };

@@ -34,6 +34,7 @@ const publicUser = (user) => {
     id: user._id,
     name: user.name,
     phone: user.phone,
+    email: user.email,
     state: user.state,
     lga: user.lga,
     ppa_name: ppa,
@@ -54,10 +55,10 @@ const publicUser = (user) => {
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { name, phone, password, state, lga, ppa, ppa_name, ppa_proximity, role } = req.body;
+    const { name, phone, email, password, state, lga, ppa, ppa_name, ppa_proximity, role } = req.body;
 
     // Validate required input
-    if (!name || !phone || !password || !state || !lga) {
+    if (!name || !phone || !email || !password || !state || !lga) {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
 
@@ -75,10 +76,17 @@ export const register = async (req, res) => {
       });
     }
 
-    // Check if phone number is already registered
-    const existingUser = await User.findOne({ phone });
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    // Check if phone number or email is already registered
+    const existingUser = await User.findOne({
+      $or: [{ phone }, { email: normalizedEmail }],
+    });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this phone number" });
+      const message = existingUser.phone === phone
+        ? "User already exists with this phone number"
+        : "User already exists with this email";
+      return res.status(400).json({ message });
     }
 
     // Hash password
@@ -89,6 +97,7 @@ export const register = async (req, res) => {
     const user = await User.create({
       name,
       phone,
+      email: normalizedEmail,
       password_hash: hashedPassword,
       state,
       lga,

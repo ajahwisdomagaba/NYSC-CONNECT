@@ -1,6 +1,6 @@
 # NYSC Connect — Frontend & Mobile API Specification (v1 Verified)
 
-* **Base URL:** `http://localhost:5000/api/v1` (Local) / `https://nysc-connecct[.onrender.com/api/v1](https://nysc-conect.onrender.com/api/v1)` (Staging)
+* **Base URL:** `http://localhost:5000/api/v1` (Local) / `[https://nysc-connect.onrender.com/api/v1](https://nysc-connect.onrender.com/api/v1)` (Staging)
 * **Default Content-Type:** `application/json` (except image upload which requires `multipart/form-data`)
 
 
@@ -40,6 +40,7 @@ Creates a corps member, landlord, or agent account. Admin accounts cannot be cre
 {
   "name": "Chinedu Okafor",
   "phone": "08012345678",
+  "email": "chinedu.okafor@email.com",
   "password": "Password123!",
   "state": "Lagos",
   "lga": "Ikeja",
@@ -49,7 +50,7 @@ Creates a corps member, landlord, or agent account. Admin accounts cannot be cre
 }
 
 ```
-*(Note: `email` is not used. `name`, `phone`, `password`, `state`, and `lga` are required. `ppa` / `ppa_name` is optional.)*
+*(`email` is required for corps members, landlords, and agents. It must be unique. `name`, `phone`, `password`, `state`, and `lga` are also required. `ppa` / `ppa_name` is optional.)*
 
 * **Request Body (landlord or agent):**
 
@@ -57,6 +58,7 @@ Creates a corps member, landlord, or agent account. Admin accounts cannot be cre
 {
   "name": "Ada Okonkwo",
   "phone": "08098765432",
+  "email": "ada.okonkwo@email.com",
   "password": "Password123!",
   "state": "Lagos",
   "lga": "Ikeja",
@@ -65,7 +67,7 @@ Creates a corps member, landlord, or agent account. Admin accounts cannot be cre
 
 ```
 
-*(`role` may also be `"agent"`. If `role` is omitted, the account is created as `corps_member`. Accepted values: `corps_member`, `landlord`, `agent`. `email` is not used. `name`, `phone`, `password`, `state`, and `lga` are required. `phone` must be at least 10 characters and unique. `ppa` / `ppa_name` and `ppa_proximity` are optional.)*
+*(`role` may also be `"agent"`. If `role` is omitted, the account is created as `corps_member`. Accepted values: `corps_member`, `landlord`, `agent`. `email`, `name`, `phone`, `password`, `state`, and `lga` are required for every role. `email` and `phone` must be unique. `phone` must be at least 10 characters. `ppa` / `ppa_name` and `ppa_proximity` are optional.)*
 
 * **Response (`201 Created`):**
 
@@ -77,6 +79,7 @@ Creates a corps member, landlord, or agent account. Admin accounts cannot be cre
     "id": "66f7f1234a1b2c3d4e5f6789",
     "name": "Ada Okonkwo",
     "phone": "08098765432",
+    "email": "ada.okonkwo@email.com",
     "state": "Lagos",
     "lga": "Ikeja",
     "ppa": null,
@@ -141,6 +144,7 @@ Authenticates user using phone and password.
     "id": "66f7f1234a1b2c3d4e5f6789",
     "name": "Chinedu Okafor",
     "phone": "08012345678",
+    "email": "chinedu.okafor@email.com",
     "state": "Lagos",
     "lga": "Ikeja",
     "ppa": "State High School",
@@ -169,6 +173,7 @@ Retrieves the profile of the authenticated user.
     "id": "66f7f1234a1b2c3d4e5f6789",
     "name": "Chinedu Okafor",
     "phone": "08012345678",
+    "email": "chinedu.okafor@email.com",
     "state": "Lagos",
     "lga": "Ikeja",
     "ppa": "State High School",
@@ -210,6 +215,7 @@ Updates location and PPA assignment fields.
     "id": "66f7f1234a1b2c3d4e5f6789",
     "name": "Chinedu Okafor",
     "phone": "08012345678",
+    "email": "chinedu.okafor@email.com",
     "state": "Lagos",
     "lga": "Kosofe",
     "ppa": "Kosofe Local Government Secretariat",
@@ -570,7 +576,15 @@ Uploads up to 3 listing images to Cloudinary with compression.
 }
 
 ```
+if no file is sent 
+* **Response (`400`):**
 
+```json
+{
+  "status": "error",
+  "message": "Please upload a document image"
+}
+---
 ---
 
 ### `POST /media/verification-documents`
@@ -597,6 +611,14 @@ Uploads one identity or authority image for landlord/agent account verification.
 
 ```
 
+if no file is sent 
+* **Response (`400`):**
+
+```json
+{
+  "status": "error",
+  "message": "Please upload a document image"
+}
 ---
 
 ## 4. Local Information Guide
