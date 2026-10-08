@@ -99,6 +99,10 @@ export const createLocalInfo = catchAsync(async (req, res) => {
     return fail(res, 400, 'details must be an object');
   }
 
+  if (!String(data.source || '').trim()) {
+    data.source = 'NYSC Connect';
+  }
+
   const doc = await LocalInfo.create({ ...data, last_updated: new Date() });
   return res.status(201).json({ status: 'success', data: doc });
 });

@@ -43,6 +43,7 @@ const localInfoSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      default: 'NYSC Connect',
     },
     last_updated: {
       type: Date,
